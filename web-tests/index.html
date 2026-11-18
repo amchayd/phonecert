@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:,">
+<title>PhoneCert tests</title>
+<style>
+  :root { --bg:#151b24; --ink:#e6ebf1; --muted:#93a0b1; --line:#2b3542; --accent:#4aa3cc; --good:#3bb273; --bad:#e05a54; --warn:#e0a030; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--ink); font:17px/1.4 -apple-system, "SF Pro Text", sans-serif; }
+  body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); overscroll-behavior:none; }
+  .screen { display:none; min-height:100%; padding:1.2rem; }
+  .screen.on { display:flex; flex-direction:column; }
+  h1 { font-size:1.5rem; margin:.4rem 0 .3rem; }
+  p { margin:0 0 .8rem; color:var(--muted); }
+  button { font:inherit; font-weight:600; color:var(--ink); background:#262f3d; border:1px solid var(--line); border-radius:12px; padding:.9rem 1rem; width:100%; margin-top:.5rem; }
+  button.primary { background:var(--accent); color:#0d1218; border-color:var(--accent); }
+  button.pass { background:var(--good); color:#0d1218; border-color:var(--good); }
+  button.fail { background:var(--bad); color:#fff; border-color:var(--bad); }
+  .row { display:flex; gap:.6rem; }
+  .list { list-style:none; padding:0; margin:0 0 1rem; }
+  .list li { display:flex; justify-content:space-between; padding:.7rem 0; border-top:1px solid var(--line); }
+  .list li:first-child { border-top:0; }
+  .group { font-size:1.05rem; margin:1.2rem 0 .1rem; } .group-hint { color:var(--muted); font-size:.9rem; margin:0 0 .3rem; }
+  .tag { color:var(--muted); }
+  .tag.pass { color:var(--good); } .tag.fail { color:var(--bad); }
+  /* touch grid */
+  #grid { position:fixed; inset:0; display:grid; background:#000; touch-action:none; z-index:10; }
+  #grid .cell { border:1px solid #1d2531; background:#262f3d; }
+  #grid .cell.hit { background:var(--good); border-color:var(--good); }
+  #grid .hud { position:fixed; left:0; right:0; bottom:calc(env(safe-area-inset-bottom) + 12px); text-align:center; pointer-events:none; color:#fff; text-shadow:0 1px 3px #000; }
+  #grid .hud button { pointer-events:auto; width:auto; display:inline-block; margin:.4rem .2rem 0; }
+  /* display */
+  #colour { position:fixed; inset:0; z-index:10; display:flex; align-items:flex-end; justify-content:center; touch-action:none; }
+  #colour .hint { margin-bottom:calc(env(safe-area-inset-bottom) + 20px); background:rgba(0,0,0,.55); color:#fff; padding:.5rem .9rem; border-radius:10px; font-size:.95rem; }
+  /* multitouch */
+  #mt { position:fixed; inset:0; z-index:10; background:#000; display:grid; place-items:center; touch-action:none; }
+  #mt .n { font-size:6rem; font-weight:700; }
+  .big { font-size:2.4rem; font-weight:700; margin:.5rem 0; }
+</style>
+</head>
+<body>
+
+<section class="screen on" id="home">
+  <h1>Hardware tests</h1>
+  <p id="browser-hint" style="display:none;color:var(--warn)">You are in another browser, not Safari. Managed browsers such as Edge can block parts of the tests. Open Safari, type <b id="short-url"></b> and enter the 6-digit code shown in PhoneCert.<br><small id="ua" style="opacity:.7;word-break:break-all"></small></p>
+  <p id="device">Loading…</p>
+  <h2 class="group">Automatic</h2>
+  <p class="group-hint">The phone measures and decides the result itself.</p>
+  <ul class="list" id="tests-auto"></ul>
+  <h2 class="group">Manual</h2>
+  <p class="group-hint">You look, listen or feel, then tap pass or fail.</p>
+  <ul class="list" id="tests-manual"></ul>
+  <p>Results are sent to PhoneCert on the Mac as you go. Run the ones you need, in any order.</p>
+</section>
+
+<section class="screen" id="s-touch">
+  <div id="grid"></div>
+</section>
+
+<section class="screen" id="s-multitouch">
+  <div id="mt">
+    <div style="text-align:center">
+      <div class="n" id="mt-n">0</div>
+      <div>Put five fingers on the screen</div>
+      <div class="hud" style="position:static;margin-top:1.5rem"><button id="mt-cancel">Cancel</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s-display">
+  <div id="colour"><div class="hint">Look for dead pixels, marks, tint. Tap for the next colour.</div></div>
+</section>
+
+<section class="screen" id="s-speaker">
+  <h1>Speakers</h1>
+  <p>Switch off silent mode and turn the volume up. Play a tone through the top (earpiece side) and the bottom speaker.</p>
+  <button class="primary" id="tone-l">Play tone, left channel</button>
+  <button class="primary" id="tone-r">Play tone, right channel</button>
+  <button class="primary" id="tone-b">Play tone, both</button>
+  <button class="primary" id="tone-sweep">Sweep 100 Hz → 10 kHz (listen for rattle)</button>
+  <p id="tone-state" style="color:var(--warn);min-height:1.2em"></p>
+  <p style="margin-top:1rem">Did you hear a clear tone from both speakers, without crackle?</p>
+  <div class="row"><button class="pass" data-result="speaker:pass">Yes</button><button class="fail" data-result="speaker:fail">No</button></div>
+  <button data-back>Back</button>
+</section>
+
+<section class="screen" id="s-ghost">
+  <div id="mt" style="background:#111">
+    <div style="text-align:center;padding:1rem">
+      <div class="big" id="ghost-n">10</div>
+      <div>Put the phone down. Do not touch the screen.</div>
+      <div id="ghost-count" style="color:var(--muted);margin-top:.5rem">0 phantom touches</div>
+      <div class="hud" style="position:static;margin-top:1.5rem"><button id="ghost-cancel">Cancel</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s-wifi">
+  <h1>Wi-Fi throughput</h1>
+  <p>Downloads 8 MB from the Mac three times and keeps the best run.</p>
+  <div class="big" id="wifi-mbps">—</div>
+  <p id="wifi-status">Starting…</p>
+  <button data-back>Back</button>
+</section>
+
+<section class="screen" id="s-load">
+  <h1>Battery under load</h1>
+  <p>20 seconds at rest, then 80 seconds of hard work on every processor core, while the Mac reads the battery over the cable. Keep the cable connected, the screen on, and do not touch the phone.</p>
+  <div class="big" id="load-n">100</div>
+  <canvas id="load-canvas" width="300" height="200" style="width:100%;border-radius:10px;background:#000"></canvas>
+  <p id="load-status"></p>
+  <button data-back>Back</button>
+</section>
+
+<section class="screen" id="s-camera">
+  <h1>Cameras</h1>
+  <p>Allow camera access when asked. Check both previews are sharp and free of spots.</p>
+  <video id="cam-front" playsinline autoplay muted style="width:100%;border-radius:10px;background:#000;max-height:34vh"></video>
+  <button id="cam-front-btn">Front camera</button>
+  <button id="cam-back-btn">Rear camera</button>
+  <p id="cam-status" style="margin-top:.6rem"></p>
+  <div class="row"><button class="pass" data-result="camera:pass">Both fine</button><button class="fail" data-result="camera:fail">Problem</button></div>
+  <button data-back>Back</button>
+</section>
+
+<section class="screen" id="s-mic">
+  <h1>Microphone</h1>
+  <p>Allow microphone access, then speak. The bar must move.</p>
+  <div class="bar" style="height:22px;background:#262f3d;border-radius:11px;overflow:hidden"><div id="mic-level" style="height:100%;width:0;background:var(--good)"></div></div>
+  <p id="mic-status" style="margin-top:.6rem"></p>
+  <div class="row"><button class="pass" data-result="microphone:pass">It moves</button><button class="fail" data-result="microphone:fail">Dead</button></div>
+  <button data-back>Back</button>
+</section>
+
+<section class="screen" id="s-motion">
+  <h1>Motion sensors</h1>
+  <p>Allow motion access, then tilt and rotate the phone.</p>
+  <div class="big" id="motion-accel">accel —</div>
+  <div class="big" id="motion-gyro" style="font-size:1.6rem">gyro —</div>
+  <p id="motion-status"></p>
+  <button data-back>Back</button>
+</section>
+
+<section class="screen" id="s-location">
+  <h1>GPS</h1>
+  <p>Allow location access. Near a window is best.</p>
+  <div class="big" id="loc-acc">—</div>
+  <p id="loc-status">Waiting for a fix…</p>
+  <button data-back>Back</button>
+</section>
+
+<section class="screen" id="s-vibration">
+  <h1>Haptics</h1>
+  <p>iOS Safari cannot trigger the Taptic Engine. Flip the mute switch (or press the action button) twice and feel the taps.</p>
+  <div class="row"><button class="pass" data-result="vibration:pass">Felt them</button><button class="fail" data-result="vibration:fail">Nothing</button></div>
+  <button data-back>Back</button>
+</section>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const TOKEN = new URLSearchParams(location.search).get('k') || '';
+const api = (p) => p + '?k=' + encodeURIComponent(TOKEN);
+const show = (id) => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('on')); $('#' + id).classList.add('on'); window.scrollTo(0, 0); release(id); };
+const state = { tests: {}, web_tests: {} };
+
+async function load() {
+  const r = await fetch(api('/api/state')); const j = await r.json();
+  state.tests = j.tests || {}; state.web_tests = j.web_tests || {}; state.secure_only = j.secure_only || [];
+  $('#device').textContent = j.device ? `Connected to the scan of ${j.device}.` : 'Connected.';
+  renderList();
+}
+function renderList() {
+  const web = (state.tests.web) || {};
+  const secureOnly = new Set(state.secure_only || []);
+  const manual = new Set(state.judged_by_you || []);
+  const row = ([k, label]) => {
+    const r = web[k];
+    const locked = secureOnly.has(k) && !window.isSecureContext;
+    const tag = r ? `<span class="tag ${r.status === 'pass' ? 'pass' : r.status === 'skip' ? '' : 'fail'}">${r.status === 'pass' ? 'Pass' : r.status === 'skip' ? 'Skipped' : 'Fail'}</span>`
+              : locked ? '<span class="tag">Needs secure page</span>' : '<span class="tag">Not run</span>';
+    const dis = locked ? 'disabled style="opacity:.45;' : 'style="';
+    return `<li><button ${dis}margin:0;text-align:left;width:auto;flex:1;background:none;border:0;padding:0;font-weight:500;color:inherit" data-run="${k}">${label.split(' — ')[0]}<br><small style="color:var(--muted);font-weight:400">${label.split(' — ')[1] || ''}</small></button>${tag}</li>`;
+  };
+  const all = Object.entries(state.web_tests);
+  $('#tests-auto').innerHTML = all.filter(([k]) => !manual.has(k)).map(row).join('');
+  $('#tests-manual').innerHTML = all.filter(([k]) => manual.has(k)).map(row).join('');
+}
+async function sendQuiet(name, status, details) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try { await post(name, status, details); state.tests.web = state.tests.web || {}; state.tests.web[name] = { status, details }; return; }
+    catch (e) { await new Promise((r) => setTimeout(r, 600)); }
+  }
+}
+async function post(name, status, details) {
+  try {
+    const r = await fetch(api('/api/result'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, status, details }), cache: 'no-store' });
+    if (!r.ok) throw new Error(await r.text());
+    return;
+  } catch (e) {
+    // Some iOS setups fail POSTs to a LAN server while GETs work; the server accepts both.
+    const q = `&name=${encodeURIComponent(name)}&status=${encodeURIComponent(status)}&details=${encodeURIComponent(JSON.stringify(details ?? null))}&r=${Math.random()}`;
+    const r = await fetch(api('/api/result') + q, { cache: 'no-store' });
+    if (!r.ok) throw new Error(await r.text());
+  }
+}
+async function send(name, status, details) {
+  let lastErr = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try { await post(name, status, details); lastErr = null; break; }
+    catch (e) { lastErr = e; await new Promise((r) => setTimeout(r, 600)); }
+  }
+  if (lastErr) alert('Could not send the result to the Mac: ' + lastErr.message + '. Check the phone is still on the same Wi-Fi and the test page is still running in PhoneCert.');
+  else { state.tests.web = state.tests.web || {}; state.tests.web[name] = { status, details }; }
+  renderList(); show('home');
+}
+document.addEventListener('click', (e) => {
+  const run = e.target.closest('[data-run]'); if (run) return start(run.dataset.run);
+  const res = e.target.closest('[data-result]'); if (res) { const [n, s] = res.dataset.result.split(':'); return send(n, s); }
+  if (e.target.closest('[data-back]')) show('home');
+});
+
+// ---------- touch grid ----------
+function startTouch() {
+  const cols = 8, rows = Math.round(8 * innerHeight / innerWidth);
+  // Fresh element each run: cloneNode drops the previous run's touch listeners (they kept counting).
+  const stale = $('#grid'); const grid = stale.cloneNode(false); stale.replaceWith(grid);
+  grid.innerHTML = ''; grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`; grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+  const cells = []; for (let i = 0; i < cols * rows; i++) { const d = document.createElement('div'); d.className = 'cell'; grid.appendChild(d); cells.push(d); }
+  const hud = document.createElement('div'); hud.className = 'hud';
+  hud.innerHTML = `<div id="touch-left">${cells.length} cells left — slide a finger over every cell</div><button id="touch-done">Finish</button><button id="touch-cancel">Cancel</button>`;
+  grid.appendChild(hud);
+  let hit = 0, moves = 0, t0 = 0, t1 = 0;
+  const mark = (x, y) => { const el = document.elementFromPoint(x, y); if (el && el.classList.contains('cell') && !el.classList.contains('hit')) { el.classList.add('hit'); hit++; $('#touch-left').textContent = `${cells.length - hit} cells left`; } };
+  let finished = false;
+  const finish = async () => {
+    if (finished) return; finished = true;
+    const missed = cells.length - hit;
+    const secs = (t1 - t0) / 1000; const hz = secs > 0.5 ? Math.round(moves / secs) : 0;
+    if (hz) await sendQuiet('touch_rate', hz >= 50 ? 'pass' : 'fail', { hz });
+    send('touch', missed === 0 ? 'pass' : 'fail', { cells: cells.length, missed });
+  };
+  const onTouch = (ev) => {
+    if (ev.target.closest('button')) return;           // let the Finish / Cancel taps through
+    ev.preventDefault();
+    const now = performance.now(); if (!t0) t0 = now; t1 = now; if (ev.type === 'touchmove') moves++;
+    for (const t of ev.touches) mark(t.clientX, t.clientY);
+    if (hit === cells.length) { $('#touch-left').textContent = 'All cells responded'; setTimeout(finish, 600); }
+  };
+  grid.addEventListener('touchstart', onTouch, { passive: false }); grid.addEventListener('touchmove', onTouch, { passive: false });
+  $('#touch-done').onclick = finish;
+  $('#touch-cancel').onclick = () => { finished = true; show('home'); };
+  show('s-touch');
+}
+
+// ---------- multitouch ----------
+function startMultitouch() {
+  const el = $('#mt'); let max = 0;
+  const on = (ev) => { if (ev.target.closest('button')) return; ev.preventDefault(); max = Math.max(max, ev.touches.length); $('#mt-n').textContent = ev.touches.length; if (max >= 5) { setTimeout(() => send('multitouch', 'pass', { max }), 400); } };
+  el.ontouchstart = on; el.ontouchmove = on; el.ontouchend = on;
+  $('#mt-cancel').onclick = () => send('multitouch', max >= 5 ? 'pass' : 'fail', { max });
+  show('s-multitouch');
+}
+
+// ---------- display ----------
+function startDisplay() {
+  const colours = ['#ff0000', '#00ff00', '#0000ff', '#ffffff', '#000000', '#808080', '#404040', 'linear-gradient(90deg,#000,#fff)', 'linear-gradient(180deg,#000,#fff)'];
+  let i = 0; const el = $('#colour'); el.style.background = colours[0];
+  el.onclick = () => {
+    i++;
+    if (i < colours.length) { el.style.background = colours[i]; return; }
+    el.onclick = null;
+    const ok = confirm('All screens clean: no dead pixels, marks, burn-in shadows or banding? OK = pass, Cancel = fail.');
+    send('display', ok ? 'pass' : 'fail', { colours: colours.length });
+  };
+  show('s-display');
+}
+
+// ---------- speaker ----------
+let ctx;
+// A context can start suspended, so resume it and say what happened. Web Audio follows the ring/silent
+// switch; forcing the page's audio session to "playback" did not help on the iPhone 13 and blocks the
+// microphone test, so the screen just asks for silent mode to be off.
+async function audio() {
+  ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+  if (ctx.state !== 'running') { try { await ctx.resume(); } catch (e) {} }
+  const ok = ctx.state === 'running';
+  $('#tone-state').textContent = ok
+    ? 'Playing. Silent? Switch off silent mode, turn the volume up and tap again.'
+    : 'Safari did not start audio (state: ' + ctx.state + '). Tap the button again.';
+  return ok;
+}
+async function tone(pan) {
+  if (!await audio()) return;
+  const osc = ctx.createOscillator(); const gain = ctx.createGain(); const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+  osc.frequency.value = 440; gain.gain.value = 0.4;
+  osc.connect(gain); if (panner) { panner.pan.value = pan; gain.connect(panner); panner.connect(ctx.destination); } else gain.connect(ctx.destination);
+  osc.start(); osc.stop(ctx.currentTime + 1.2);
+}
+$('#tone-l').onclick = () => tone(-1); $('#tone-r').onclick = () => tone(1); $('#tone-b').onclick = () => tone(0);
+$('#tone-sweep').onclick = async () => {
+  if (!await audio()) return;
+  const osc = ctx.createOscillator(); const gain = ctx.createGain(); gain.gain.value = 0.5;
+  osc.frequency.setValueAtTime(100, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(10000, ctx.currentTime + 5);
+  osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 5);
+};
+
+// ---------- ghost touches ----------
+function startGhost() {
+  let n = 0, left = 10; const el = $('#s-ghost');
+  const on = (ev) => { if (ev.target.closest('button')) return; ev.preventDefault(); n++; $('#ghost-count').textContent = `${n} phantom touch${n === 1 ? '' : 'es'}`; };
+  el.addEventListener('touchstart', on, { passive: false });
+  const id = setInterval(() => { left--; $('#ghost-n').textContent = left; if (left <= 0) { clearInterval(id); el.removeEventListener('touchstart', on); send('ghost_touch', n === 0 ? 'pass' : 'fail', { phantom: n }); } }, 1000);
+  $('#ghost-cancel').onclick = () => { clearInterval(id); el.removeEventListener('touchstart', on); show('home'); };
+  $('#ghost-n').textContent = left; $('#ghost-count').textContent = '0 phantom touches';
+  show('s-ghost');
+}
+
+// ---------- wifi throughput ----------
+async function startWifi() {
+  show('s-wifi'); $('#wifi-mbps').textContent = '—'; $('#wifi-status').textContent = 'Downloading…';
+  let best = 0;
+  for (let i = 0; i < 3; i++) {
+    const t0 = performance.now();
+    try { const r = await fetch(api('/api/blob') + '&mb=8&r=' + Math.random()); const buf = await r.arrayBuffer(); const s = (performance.now() - t0) / 1000; best = Math.max(best, (buf.byteLength * 8 / 1e6) / s); }
+    catch (e) { $('#wifi-status').textContent = 'Download failed: ' + e.message; return; }
+    $('#wifi-mbps').textContent = best.toFixed(0) + ' Mbit/s'; $('#wifi-status').textContent = `Run ${i + 1} of 3`;
+  }
+  $('#wifi-status').textContent = 'Done';
+  send('wifi_speed', best >= 20 ? 'pass' : 'fail', { mbps: Math.round(best) });
+}
+
+// ---------- battery under load ----------
+const REST_S = 20, LOAD_S = 80;   // the gauge refreshes about every 20 s: 100 s gives ~5 readings
+async function startLoad() {
+  show('s-load'); $('#load-n').textContent = REST_S + LOAD_S; $('#load-status').textContent = 'Checking that the Mac can read the battery…';
+  const post = async (phase) => (await fetch(api('/api/load') + '&phase=' + phase, { method: 'POST' })).json();
+  const finish = async () => {
+    try {
+      const j = await post('stop');
+      $('#load-status').textContent = j.status === 'skip' ? 'Skipped: ' + j.reason
+        : `Measured ${j.resistance_mohm} mΩ` + (j.gauge_ra_mohm ? `, the battery's own figure ${j.gauge_ra_mohm} mΩ` : '') + `. Judged on the worse one, limit ${j.fail_above_mohm} → ${j.status}`;
+      setTimeout(() => { load(); show('home'); }, 6000);
+    } catch (e) { $('#load-status').textContent = 'Could not finish: ' + e.message; }
+  };
+  let started;
+  try { started = await post('start'); } catch (e) { $('#load-status').textContent = 'Could not start: ' + e.message; return; }
+  if (!started.gauge) return finish();          // no cable: recorded as skipped, not failed
+  if (started.too_full) {                       // would be inconclusive: say so now instead of after 100 seconds
+    post('cancel').catch(() => {});
+    $('#load-n').textContent = started.charge_pct + '%';
+    $('#load-status').textContent = `The battery is at ${started.charge_pct} % and on the charger, so this test cannot measure it: a nearly full battery takes almost no current. Nothing was recorded. You do not need this test to judge the battery: the scan in PhoneCert reads the battery's internal resistance at any charge level (Battery section).`;
+    return;
+  }
+  const cv = $('#load-canvas'); const g = cv.getContext('2d'); let left = REST_S + LOAD_S; let running = false; let workers = [];
+  const src = URL.createObjectURL(new Blob([`let x=0; onmessage=()=>{ const t=Date.now(); while(Date.now()-t<${LOAD_S * 1000}){ x=Math.sqrt(x+Math.random()); } postMessage(x); }`]));
+  const draw = () => { if (!running) return; for (let i = 0; i < 300; i++) { g.fillStyle = `hsl(${Math.random() * 360},80%,50%)`; g.fillRect(Math.random() * 300, Math.random() * 200, 20, 20); } requestAnimationFrame(draw); };
+  g.fillStyle = '#000'; g.fillRect(0, 0, 300, 200);
+  $('#load-status').textContent = 'Resting: measuring the battery before the load…';
+  const id = setInterval(() => {
+    left--; $('#load-n').textContent = Math.max(left, 0);
+    if (left === LOAD_S) {                      // rest is over: load every core and the GPU
+      post('load').catch(() => {});
+      const n = Math.min(navigator.hardwareConcurrency || 4, 8);
+      workers = Array.from({ length: n }, () => { const w = new Worker(src); w.postMessage(1); return w; });
+      running = true; draw();
+      $('#load-status').textContent = `Working on ${n} cores… keep the screen on.`;
+    }
+    if (left <= 0) { clearInterval(id); running = false; workers.forEach((w) => w.terminate()); finish(); }
+  }, 1000);
+}
+
+// ---------- secure-context tests ----------
+let camStream;
+// Leaving a test screen (result sent, Back, or another test) must hand the hardware back,
+// otherwise Safari keeps showing the camera / microphone as in use.
+function release(screen) {
+  if (screen !== 's-camera' && camStream) { camStream.getTracks().forEach((t) => t.stop()); camStream = null; $('#cam-front').srcObject = null; }
+  if (screen !== 's-mic' && micStream) { micStream.getTracks().forEach((t) => t.stop()); micStream = null; }
+}
+let micStream;
+async function cam(facing) {
+  if (camStream) camStream.getTracks().forEach((t) => t.stop());
+  try { camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing } }); $('#cam-front').srcObject = camStream; $('#cam-status').textContent = facing === 'user' ? 'Front camera' : 'Rear camera'; }
+  catch (e) { $('#cam-status').textContent = 'Camera failed: ' + e.message; }
+}
+$('#cam-front-btn').onclick = () => cam('user'); $('#cam-back-btn').onclick = () => cam('environment');
+async function startMic() {
+  show('s-mic'); $('#mic-level').style.width = '0'; $('#mic-status').textContent = 'Asking for the microphone…';
+  try {
+    try { if (navigator.audioSession) navigator.audioSession.type = 'auto'; } catch (e) {}   // undo any earlier "playback"
+    const st = micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state !== 'running') await ctx.resume();     // suspended context = a bar that never moves
+    const src = ctx.createMediaStreamSource(st); const an = ctx.createAnalyser(); an.fftSize = 512; src.connect(an);
+    const buf = new Uint8Array(an.frequencyBinCount);
+    const tick = () => {
+      if (micStream !== st) { src.disconnect(); return; }   // released when the screen was left
+      an.getByteTimeDomainData(buf); let m = 0; for (const v of buf) m = Math.max(m, Math.abs(v - 128));
+      $('#mic-level').style.width = Math.min(100, m * 1.5) + '%'; requestAnimationFrame(tick);
+    };
+    tick(); $('#mic-status').textContent = ctx.state === 'running' ? 'Listening: speak, the bar must move.' : 'Audio did not start (state: ' + ctx.state + '). Go back and open the test again.';
+  } catch (e) { $('#mic-status').textContent = 'Microphone failed: ' + (e.name || '') + ' ' + e.message; }
+}
+async function startMotion() {
+  show('s-motion');
+  try {
+    if (DeviceMotionEvent.requestPermission) { const p = await DeviceMotionEvent.requestPermission(); if (p !== 'granted') throw new Error('permission ' + p); }
+    let maxA = 0, maxG = 0, n = 0;
+    const h = (e) => {
+      const a = e.accelerationIncludingGravity || {}; const r = e.rotationRate || {};
+      const am = Math.hypot(a.x || 0, a.y || 0, a.z || 0); const gm = Math.hypot(r.alpha || 0, r.beta || 0, r.gamma || 0);
+      maxA = Math.max(maxA, am); maxG = Math.max(maxG, gm); n++;
+      $('#motion-accel').textContent = `accel ${am.toFixed(1)} m/s²`; $('#motion-gyro').textContent = `gyro ${gm.toFixed(0)} °/s`;
+      if (n > 150 && maxG > 60) { window.removeEventListener('devicemotion', h); send('motion', 'pass', { max_accel: +maxA.toFixed(1), max_gyro: Math.round(maxG) }); }
+    };
+    window.addEventListener('devicemotion', h); $('#motion-status').textContent = 'Rotate the phone firmly…';
+    setTimeout(() => { if (n < 10) { window.removeEventListener('devicemotion', h); send('motion', 'fail', { events: n }); } }, 8000);
+  } catch (e) { $('#motion-status').textContent = 'Motion failed: ' + e.message; }
+}
+function startLocation() {
+  show('s-location'); $('#loc-acc').textContent = '—';
+  navigator.geolocation.getCurrentPosition(
+    (p) => { $('#loc-acc').textContent = `±${Math.round(p.coords.accuracy)} m`; $('#loc-status').textContent = 'Fix received'; send('location', p.coords.accuracy < 200 ? 'pass' : 'fail', { accuracy_m: Math.round(p.coords.accuracy) }); },
+    (e) => {
+      if (e.code === 1) {   // permission refused (often without any prompt): a settings matter, not a GPS fault → nothing recorded
+        $('#loc-status').innerHTML = 'Location is blocked for Safari, so iOS did not ask. Nothing was recorded.<br><br>' +
+          '1. Settings → Privacy &amp; Security → Location Services: on.<br>' +
+          '2. Same screen → Safari Websites: "While Using the App" or "Ask Next Time".<br>' +
+          '3. Settings → Apps → Safari → Location: "Ask".<br><br>Then come back and run GPS again.';
+        return;
+      }
+      $('#loc-status').textContent = 'No fix: ' + e.message; send('location', 'fail', { error: e.message, code: e.code });
+    },
+    { enableHighAccuracy: true, timeout: 30000 });
+}
+
+function start(name) {
+  if (name === 'touch') return startTouch();
+  if (name === 'touch_rate') return startTouch();
+  if (name === 'ghost_touch') return startGhost();
+  if (name === 'wifi_speed') return startWifi();
+  if (name === 'battery_load') return startLoad();
+  if (name === 'camera') { show('s-camera'); return cam('user'); }
+  if (name === 'microphone') return startMic();
+  if (name === 'motion') return startMotion();
+  if (name === 'location') return startLocation();
+  if (name === 'multitouch') return startMultitouch();
+  if (name === 'display') return startDisplay();
+  if (name === 'speaker') return show('s-speaker');
+  if (name === 'vibration') return show('s-vibration');
+}
+if (/EdgiOS|CriOS|FxiOS|OPT\//.test(navigator.userAgent)) { $('#short-url').textContent = location.host; $('#ua').textContent = navigator.userAgent; $('#browser-hint').style.display = 'block'; }
+load();
+</script>
+</body>
+</html>

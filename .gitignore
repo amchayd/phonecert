@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.egg-info/
+.env
+reports/*.json
+reports/*.pdf
+.DS_Store
+reports/research/
+.playwright-mcp/
+reports/.certs/
+reports/.webtests.log

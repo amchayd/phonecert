@@ -1,0 +1,372 @@
+{
+ "scanned_at": "2026-11-10T23:20:48",
+ "device": {
+  "name": "Demo iPhone",
+  "product_type": "iPhone14,5",
+  "model_number": "MNGK3",
+  "region": "ZD/A",
+  "color": "1",
+  "serial": "DEMO123456",
+  "imei": "359451180000012",
+  "imei2": "359451180000020",
+  "ios_version": "26.0",
+  "activation_state": "Activated",
+  "locked_now": false,
+  "wifi_mac": "02:00:00:00:00:01",
+  "bluetooth_mac": "02:00:00:00:00:02",
+  "timezone": "UTC",
+  "build_version": "23A341",
+  "hardware_model": "D17AP",
+  "model": "iPhone 13",
+  "unit_type": "New retail"
+ },
+ "battery": {
+  "health_pct": 75.3,
+  "health_source": "computed",
+  "grade": "Poor",
+  "design_capacity_mah": 3208,
+  "current_max_capacity_mah": 2417,
+  "cycle_count": 1059,
+  "charge_pct": 100,
+  "temperature_c": 29.5,
+  "voltage_mv": 4290,
+  "battery_serial": "FG920330000000000",
+  "is_charging": null,
+  "operating_hours": 40955,
+  "lifetime": {
+   "max_temperature_c": 51.4,
+   "min_temperature_c": 3.5,
+   "avg_temperature_c": 25,
+   "max_full_charge_mah": 3408,
+   "min_full_charge_mah": 2111,
+   "max_pack_voltage_mv": 4473,
+   "gauge_resets": 0,
+   "operating_hours": 40955
+  },
+  "last_shutdown": {
+   "at": "2026-11-09T13:13:28",
+   "charge_pct": 0,
+   "voltage_mv": 3168,
+   "temperature_c": 29.9,
+   "unexpected": false
+  }
+ },
+ "storage": {
+  "capacity_gb": 128,
+  "total_gb": 128.0,
+  "used_gb": 126.1,
+  "free_gb": 1.9,
+  "purgeable_gb": 96.3,
+  "used_pct": 99
+ },
+ "sim": {
+  "summary": "physical SIM in slot 2 (Example (xx))",
+  "active_count": 1,
+  "slots": [
+   {
+    "slot": 1,
+    "present": false,
+    "embedded": null,
+    "status": "kCTSIMSupportSIMStatusPINLocked",
+    "carrier": null,
+    "mcc": null,
+    "mnc": null
+   },
+   {
+    "slot": 2,
+    "present": true,
+    "embedded": false,
+    "status": null,
+    "carrier": "Example (xx)",
+    "mcc": "001",
+    "mnc": "01"
+   }
+  ],
+  "tray": "Tray in, SIM card present",
+  "esim": false,
+  "card_not_recognised": false,
+  "telephony": true,
+  "baseband_version": "5.02.02",
+  "activation": "Activated"
+ },
+ "system": {
+  "panic_logs": {
+   "panic_count": 0,
+   "last_panic": null,
+   "days_since_last_panic": null,
+   "risk": "none",
+   "crash_file_count": 337,
+   "panic_files": [],
+   "low_battery_logs": 12,
+   "jetsam_events": 15,
+   "watchdog_resets": 2,
+   "ota_updates": {
+    "count": 190,
+    "first": "2026-10-12",
+    "last": "2026-11-10"
+   }
+  },
+  "jailbreak": {
+   "verdict": "suspicious",
+   "jailbreak_apps": [],
+   "sideloaded_apps": [
+    "Example Dev (com.example.devapp)"
+   ],
+   "crash_hints": [],
+   "user_app_count": 50
+  },
+  "profiles": {
+   "count": 0,
+   "profiles": [],
+   "mdm_enrolled": false,
+   "verdict": "clean"
+  }
+ },
+ "parts": {
+  "logic_board": {
+   "serial": "DEMO123456",
+   "mlb_serial": "F3X2080000000000",
+   "model_number": "MNGK3",
+   "regulatory_model": "A2633",
+   "wifi_module_vendor": "USI",
+   "receiver_vendor": "AAC"
+  },
+  "battery": {
+   "serial": "FG920330000000000",
+   "manufacturer_data": "GWL15100000000000",
+   "auth_passed": true,
+   "trusted": true,
+   "auth_status": "AuthSuccess"
+  },
+  "display": {
+   "panel_id": "G9Q14500000000000+A2000000000000000201+GLD12700000000000",
+   "panel_serial": "G9Q14500000000000"
+  },
+  "cameras": {
+   "back": {
+    "expected": true,
+    "serial": "DNL14800000000000"
+   },
+   "back_ultrawide": {
+    "expected": true,
+    "serial": "DNM20400000000000"
+   },
+   "front": {
+    "expected": true,
+    "serial": "DNM20200000000000"
+   },
+   "front_ir": {
+    "expected": true,
+    "serial": "F8P20400000000000"
+   }
+  },
+  "camera_validation": {
+   "CmClValidationStatus": "Pass",
+   "CmPMValidationStatus": "Unknown",
+   "FCClValidationStatus": "Invalid",
+   "YonkersDATFileStatus": "Unknown"
+  },
+  "face_id": {
+   "projector_serial": "A2C1A300000000000",
+   "self_test_result": 0
+  },
+  "taptic": {
+   "serial": "FTN20300000000000+XPB1XX",
+   "firmware": "623.0"
+  },
+  "nand": {
+   "model": "APPLE SSD AP0128Z",
+   "serial": "0123456789abcdef",
+   "firmware": "555"
+  },
+  "touch": {
+   "multitouch_id": 100000000000000001
+  },
+  "speaker": {
+   "attached": true,
+   "calibrated": true
+  },
+  "flags": [],
+  "io_classes": {
+   "platform": "IOPlatformExpertDevice",
+   "battery_auth": "AppleAuthCPRelay",
+   "camera": "AppleH13CamIn",
+   "face_id": "ApplePearlSEPDriver",
+   "display": "AppleCLCD2",
+   "taptic": "AppleHapticsSupportLEAP",
+   "nand": "AppleANS3CGv2Controller",
+   "touch": "AppleMultitouchDevice",
+   "speaker": "AppleCS35L27Amp"
+  },
+  "battery_age": {
+   "verdict": "normal",
+   "operating_hours": 40955,
+   "board_built": "2022-02-21",
+   "battery_built": "2022-02-02",
+   "phone_age_hours": 41352,
+   "ratio": 0.99,
+   "reasons": []
+  },
+  "build_dates": {
+   "verdict": "consistent",
+   "board_built": "2022-02-21",
+   "components": [
+    {
+     "part": "display",
+     "serial": "G9Q14500000000000",
+     "built": "2021-11-08",
+     "days_after_board": -105,
+     "verdict": "original"
+    },
+    {
+     "part": "camera back",
+     "serial": "DNL14800000000000",
+     "built": "2021-11-29",
+     "days_after_board": -84,
+     "verdict": "original"
+    },
+    {
+     "part": "camera ultrawide",
+     "serial": "DNM20400000000000",
+     "built": "2022-01-24",
+     "days_after_board": -28,
+     "verdict": "original"
+    },
+    {
+     "part": "camera front",
+     "serial": "DNM20200000000000",
+     "built": "2022-01-10",
+     "days_after_board": -42,
+     "verdict": "original"
+    },
+    {
+     "part": "camera front IR",
+     "serial": "F8P20400000000000",
+     "built": "2022-01-24",
+     "days_after_board": -28,
+     "verdict": "original"
+    },
+    {
+     "part": "taptic engine",
+     "serial": "FTN20300000000000",
+     "built": "2022-01-17",
+     "days_after_board": -35,
+     "verdict": "original"
+    }
+   ],
+   "dated_count": 6,
+   "reasons": []
+  }
+ },
+ "imei_check": null,
+ "trust": {
+  "verdict": "blocked",
+  "blockers": [
+   "find_my"
+  ],
+  "warnings": [
+   "setup",
+   "jailbreak"
+  ],
+  "unchecked": [
+   "blacklist"
+  ],
+  "checks": [
+   {
+    "key": "find_my",
+    "title": "Find My / Activation Lock",
+    "status": "fail",
+    "severity": "blocker",
+    "detail": "Find My is ON: the phone is linked to an Apple ID. After an erase it will ask for that owner's password.",
+    "action": "Signing out of iCloud (Settings \u2192 [name] \u2192 Sign Out) turns it off. A re-scan then reads OFF."
+   },
+   {
+    "key": "blacklist",
+    "title": "IMEI blacklist (stolen / lost / unpaid)",
+    "status": "not_checked",
+    "severity": "blocker",
+    "detail": "Not checked \u2014 paid lookup not run yet.",
+    "action": null,
+    "runnable": true,
+    "cost_usd": 0.4,
+    "provider": "imei.info"
+   },
+   {
+    "key": "supervision",
+    "title": "Supervision (company-owned)",
+    "status": "pass",
+    "severity": "blocker",
+    "detail": "Not supervised.",
+    "action": null
+   },
+   {
+    "key": "mdm",
+    "title": "Configuration profiles / MDM",
+    "status": "pass",
+    "severity": "blocker",
+    "detail": "No configuration profiles.",
+    "action": null
+   },
+   {
+    "key": "carrier_lock",
+    "title": "Carrier (SIM) lock",
+    "status": "manual",
+    "severity": "warning",
+    "detail": "Not readable over USB.",
+    "action": "Settings \u2192 General \u2192 About \u2192 Carrier Lock must say \u201cNo SIM restrictions\u201d, or test your own SIM.",
+    "runnable": true,
+    "cost_usd": 0.4,
+    "provider": "imei.info"
+   },
+   {
+    "key": "activation",
+    "title": "Activation",
+    "status": "pass",
+    "severity": "warning",
+    "detail": "Activation state: Activated.",
+    "action": null
+   },
+   {
+    "key": "setup",
+    "title": "Erased / set-up state",
+    "status": "warn",
+    "severity": "info",
+    "detail": "The phone is set up (SetupUsingiTunes, RestoredFromDevice): it holds the seller's data and account.",
+    "action": "Settings \u2192 General \u2192 Transfer or Reset \u2192 Erase All Content and Settings removes it."
+   },
+   {
+    "key": "jailbreak",
+    "title": "Jailbreak",
+    "status": "warn",
+    "severity": "warning",
+    "detail": "Dev-signed apps present \u2014 common for developers, also for jailbreak tooling.",
+    "action": "An erase + iOS restore removes a jailbreak."
+   },
+   {
+    "key": "unit_type",
+    "title": "Unit type",
+    "status": "pass",
+    "severity": "info",
+    "detail": "New retail: new retail unit.",
+    "action": null
+   },
+   {
+    "key": "parts",
+    "title": "Genuine parts",
+    "status": "pass",
+    "severity": "warning",
+    "detail": "Battery authenticated, parts consistent.",
+    "action": null
+   },
+   {
+    "key": "sdp",
+    "title": "Stolen Device Protection (iOS 17.3+)",
+    "status": "manual",
+    "severity": "info",
+    "detail": "If the seller has it on, turning off Find My may require a 1-hour delay away from familiar locations.",
+    "action": "Signing out takes effect faster when done at a familiar location."
+   }
+  ]
+ },
+ "saved_to": "reports/demo.json"
+}
